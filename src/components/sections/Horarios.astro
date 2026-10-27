@@ -1,0 +1,303 @@
+---
+import Highlight from '../ui/Highlight.astro';
+import Icon from '../ui/Icon.astro';
+import OpenStatus from '../ui/OpenStatus.astro';
+import { HOURS, HOURS_SUMMARY, CLASSES_BY_DAY, CLASS_TIMES } from '../../data/site';
+
+// Ordem de exibição: segunda → domingo
+const order = [1, 2, 3, 4, 5, 6, 0];
+const fmt = (h: number) => `${Math.floor(h)}h${h % 1 ? String(Math.round((h % 1) * 60)).padStart(2, '0') : ''}`;
+---
+
+<section class="section horarios" id="horarios" aria-labelledby="horarios-title">
+  <div class="container horarios__grid">
+    <div class="horarios__intro">
+      <p class="eyebrow" data-reveal>Horários</p>
+      <h2 class="display section-title" id="horarios-title" data-reveal-title>
+        <span class="thin">Aberto</span><br />
+        <span class="bold"><Highlight>7 dias</Highlight> por semana</span>
+      </h2>
+
+      <div class="horarios__now">
+        <OpenStatus class="horarios__status" />
+      </div>
+
+      <ul class="horarios__summary" data-stagger>
+        {
+          HOURS_SUMMARY.map((h) => (
+            <li class="pill" data-stagger-item>
+              <span class="pill__label">{h.label}</span>
+              <span class="pill__sep" aria-hidden="true" />
+              <span class="pill__value">{h.value}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="agenda" data-tabs>
+      <h3 class="agenda__title">Grade da semana</h3>
+      <div class="agenda__tabs" role="tablist" aria-label="Dias da semana">
+        {
+          order.map((d, i) => (
+            <button
+              type="button"
+              role="tab"
+              class="agenda__tab"
+              id={`tab-dia-${d}`}
+              aria-controls={`painel-dia-${d}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              data-tab={d}
+            >
+              {HOURS[d].short}
+            </button>
+          ))
+        }
+        <span class="agenda__indicator" aria-hidden="true" data-tab-indicator></span>
+      </div>
+
+      <div class="agenda__panels">
+        {
+          order.map((d) => {
+            const cls = CLASSES_BY_DAY[d];
+            return (
+              <div
+                class="agenda__panel"
+                role="tabpanel"
+                id={`painel-dia-${d}`}
+                aria-labelledby={`tab-dia-${d}`}
+                tabindex="0"
+                data-panel={d}
+              >
+                <p class="agenda__day">{HOURS[d].day}</p>
+                <div class="agenda__row">
+                  <Icon name="clock" />
+                  <div>
+                    <p class="agenda__label">Funcionamento</p>
+                    <p class="agenda__value">
+                      {fmt(HOURS[d].open)} às {fmt(HOURS[d].close)}
+                    </p>
+                  </div>
+                </div>
+                {cls ? (
+                  <ul class="agenda__classes">
+                    {CLASS_TIMES.map((t) => (
+                      <li class="agenda__class">
+                        <span class="agenda__time">{t}</span>
+                        <span class="agenda__class-name">Aula de {cls}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="agenda__empty">
+                    Sem aulas coletivas neste dia. Musculação e cardio liberados durante todo o horário de
+                    funcionamento.
+                  </p>
+                )}
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .horarios {
+    background: var(--pf-surface);
+  }
+
+  .horarios__grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .horarios__now {
+    margin-top: 2rem;
+  }
+
+  .horarios__now :global(.open-status) {
+    font-size: var(--fs-lg);
+  }
+
+  .horarios__summary {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+    max-width: 420px;
+  }
+
+  .pill {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.4rem;
+    border-radius: 999px;
+    background: var(--pf-card);
+    border: 1px solid var(--pf-line);
+  }
+
+  .pill__label {
+    font-weight: 600;
+  }
+
+  .pill__sep {
+    width: 1px;
+    height: 1.2em;
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .pill__value {
+    font-weight: 700;
+    font-stretch: 112%;
+    text-align: right;
+  }
+
+  /* ---------- Abas ---------- */
+
+  .agenda {
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    border-radius: var(--radius);
+    background: var(--pf-black);
+    border: 1px solid var(--pf-line);
+  }
+
+  .agenda__title {
+    font-size: var(--fs-md);
+    font-weight: 800;
+    font-stretch: 125%;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .agenda__tabs {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-top: 1.25rem;
+    border-bottom: 1px solid var(--pf-line);
+  }
+
+  .agenda__tab {
+    min-height: 48px;
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    font-stretch: 112%;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--pf-muted);
+    transition: color 0.3s;
+  }
+
+  .agenda__tab[aria-selected='true'] {
+    color: var(--pf-white);
+  }
+
+  .agenda__tab.is-today::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 5px;
+    margin: 4px auto 0;
+    border-radius: 50%;
+    background: var(--pf-red-hot);
+  }
+
+  .agenda__indicator {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: calc(100% / 7);
+    height: 3px;
+    background: var(--pf-red);
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  :global(html:not(.motion-ready)) .agenda__indicator {
+    display: none;
+  }
+
+  .agenda__panels {
+    display: grid;
+    gap: 2rem;
+    padding-top: 1.75rem;
+  }
+
+  .agenda__panel:focus-visible {
+    outline-offset: 6px;
+  }
+
+  .agenda__day {
+    font-size: var(--fs-xl);
+    font-weight: 900;
+    font-stretch: 125%;
+    text-transform: uppercase;
+  }
+
+  .agenda__row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 1.25rem;
+  }
+
+  .agenda__row :global(.icon) {
+    width: 26px;
+    color: var(--pf-red-hot);
+  }
+
+  .agenda__label {
+    font-size: var(--fs-xs);
+    color: var(--pf-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .agenda__value {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+  }
+
+  .agenda__classes {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+
+  .agenda__class {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius-sm);
+    background: var(--pf-card);
+    border-left: 4px solid var(--pf-red);
+  }
+
+  .agenda__time {
+    font-weight: 900;
+    font-stretch: 125%;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .agenda__class-name {
+    font-weight: 500;
+  }
+
+  .agenda__empty {
+    margin-top: 1.5rem;
+    color: var(--pf-muted);
+    font-size: var(--fs-sm);
+  }
+
+  @media (min-width: 1024px) {
+    .horarios__grid {
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: clamp(3rem, 6vw, 6rem);
+      align-items: start;
+    }
+  }
+</style>

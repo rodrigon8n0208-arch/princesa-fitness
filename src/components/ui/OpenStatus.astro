@@ -1,0 +1,68 @@
+---
+// Indicador "Aberto agora / Fechado agora". O texto é calculado no navegador
+// (src/scripts/ui/open-status.ts) com o fuso de Princesa Isabel.
+// Sem JS, mostra só o resumo de horários.
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<span class:list={['open-status', className]} data-open-status>
+  <span class="open-status__dot" aria-hidden="true"></span>
+  <span data-open-status-text>Aberto todos os dias</span>
+</span>
+
+<style>
+  .open-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--pf-white);
+  }
+
+  .open-status__dot {
+    position: relative;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--pf-muted);
+  }
+
+  .open-status[data-state='open'] .open-status__dot {
+    background: #2fd36a;
+  }
+
+  .open-status[data-state='open'] .open-status__dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid #2fd36a;
+    animation: open-pulse 1.8s ease-out infinite;
+  }
+
+  .open-status[data-state='closed'] .open-status__dot {
+    background: var(--pf-red-hot);
+  }
+
+  @keyframes open-pulse {
+    from {
+      transform: scale(0.6);
+      opacity: 1;
+    }
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .open-status__dot::after {
+      animation: none !important;
+      display: none;
+    }
+  }
+</style>

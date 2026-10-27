@@ -1,0 +1,43 @@
+---
+import { LOGO } from '../../data/logo-paths';
+
+interface Props {
+  variant?: 'full' | 'symbol';
+  /** cor do "P" e de "PRINCESA" */
+  tone?: 'light' | 'dark';
+  class?: string;
+  title?: string;
+}
+
+const { variant = 'full', tone = 'light', class: className, title = 'Princesa Fitness' } = Astro.props;
+const fg = tone === 'light' ? '#FFFFFF' : '#0A0A0B';
+const isFull = variant === 'full';
+// title="" = uso decorativo (escondido de leitores de tela)
+const a11y = title ? ({ role: 'img', 'aria-label': title } as const) : ({ 'aria-hidden': 'true' } as const);
+---
+
+<!-- fill-rule="evenodd" mantém vazados os miolos das letras (P, R, A, O…), que são contornos internos -->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={isFull ? LOGO.viewBox : LOGO.symbolViewBox}
+  class:list={['logo', `logo--${variant}`, className]}
+  fill-rule="evenodd"
+  {...a11y}
+>
+  <path class="logo__white" fill={fg} fill-rule="evenodd" d={LOGO.symbolWhite}></path>
+  <path class="logo__red" fill="#C41E24" fill-rule="evenodd" d={LOGO.symbolRed}></path>
+  {
+    isFull && (
+      <>
+        <path class="logo__word-white" fill={fg} fill-rule="evenodd" d={LOGO.wordWhite} />
+        <path class="logo__word-red" fill="#C41E24" fill-rule="evenodd" d={LOGO.wordRed} />
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .logo {
+    height: auto;
+  }
+</style>

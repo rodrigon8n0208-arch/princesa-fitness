@@ -1,0 +1,81 @@
+---
+import { DESTAQUES } from '../../data/site';
+---
+
+<section class="destaques" aria-label="Princesa Fitness em números">
+  <div class="container">
+    <ul class="destaques__grid">
+      {
+        DESTAQUES.map((d) => (
+          <li class="destaque" data-stagger-item>
+            <p class="destaque__value">
+              <span data-count={d.value}>{d.value}</span><span class="destaque__suffix">{d.suffix}</span>
+            </p>
+            <p class="destaque__label">{d.label}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .destaques {
+    position: relative;
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+    border-block: 1px solid var(--pf-line);
+    background:
+      radial-gradient(60% 120% at 50% 120%, rgba(196, 30, 36, 0.25), transparent 70%),
+      var(--pf-black);
+  }
+
+  .destaques__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 1.5rem;
+  }
+
+  .destaque {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+
+  .destaque::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.35em;
+    bottom: 0.35em;
+    width: 4px;
+    background: var(--pf-red);
+    transform: skewX(var(--slant));
+  }
+
+  .destaque__value {
+    font-size: clamp(3rem, 2rem + 3.6vw, 5rem);
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .destaque__suffix {
+    font-size: 0.55em;
+    margin-left: 0.04em;
+    color: var(--pf-red-hot);
+  }
+
+  .destaque__label {
+    margin-top: 0.6rem;
+    font-size: var(--fs-sm);
+    color: var(--pf-muted);
+    max-width: 22ch;
+  }
+
+  @media (min-width: 1024px) {
+    .destaques__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

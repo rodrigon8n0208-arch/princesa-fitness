@@ -1,0 +1,94 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '../styles/global.css';
+import fontLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import { SITE, HOURS } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${SITE.name} | Academia em ${SITE.city} - ${SITE.state}`,
+  description = SITE.description,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og-image.jpg', Astro.site);
+
+const dayCodes = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const pad = (h: number) => `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.round((h % 1) * 60)).padStart(2, '0')}`;
+
+// JSON-LD ExerciseGym — sem telefone/aggregateRating até confirmação (ver PENDENCIAS.md)
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ExerciseGym',
+  name: SITE.name,
+  alternateName: SITE.shortName,
+  description: SITE.description,
+  url: canonical.href,
+  image: ogImage.href,
+  logo: new URL('/images/brand/logo-princesa-fitness.svg', Astro.site).href,
+  priceRange: 'R$ 129,90 – R$ 359,90 por mês',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.address.street,
+    addressLocality: SITE.address.city,
+    addressRegion: SITE.address.state,
+    ...(SITE.address.postalCode && { postalCode: SITE.address.postalCode }),
+    addressCountry: 'BR',
+  },
+  openingHoursSpecification: HOURS.map((h, i) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: `https://schema.org/${dayCodes[i]}`,
+    opens: pad(h.open),
+    closes: pad(h.close),
+  })),
+  sameAs: [SITE.instagram.url],
+};
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#0A0A0B" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Logo da Princesa Fitness sobre foto de halteres da academia" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Marca o documento como "com JS". Se o script principal não iniciar em 4s,
+         remove a marca e o conteúdo aparece sem animação. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      setTimeout(function () {
+        if (!document.documentElement.classList.contains('motion-ready')) {
+          document.documentElement.classList.remove('js');
+        }
+      }, 4000);
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <slot />
+  </body>
+</html>

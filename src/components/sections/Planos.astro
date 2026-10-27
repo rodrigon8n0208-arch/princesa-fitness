@@ -1,0 +1,393 @@
+---
+import Highlight from '../ui/Highlight.astro';
+import Icon from '../ui/Icon.astro';
+import { PLANS, PERIODS, formatBRL, whatsappUrl } from '../../data/site';
+
+const planMessage = (name: string, period: string) =>
+  `Olá! Vim pelo site e tenho interesse no Plano ${name} (${period}) da Princesa Fitness.`;
+---
+
+<section class="section planos" id="planos" aria-labelledby="planos-title">
+  <span class="ghost planos__ghost" aria-hidden="true" data-parallax="-0.15">Planos</span>
+
+  <div class="container">
+    <div class="planos__head">
+      <div>
+        <p class="eyebrow" data-reveal>Planos</p>
+        <h2 class="display section-title" id="planos-title" data-reveal-title>
+          <span class="thin">Seu objetivo merece</span><br />
+          <span class="bold">um plano <Highlight>à altura</Highlight></span>
+        </h2>
+      </div>
+
+      <div class="period" role="group" aria-label="Escolha a duração do plano" data-period-switch>
+        {
+          PERIODS.map((p, i) => (
+            <button
+              type="button"
+              class="period__btn"
+              aria-pressed={i === 0 ? 'true' : 'false'}
+              data-period={p.id}
+            >
+              {p.label}
+            </button>
+          ))
+        }
+        <span class="period__pill" aria-hidden="true" data-period-pill></span>
+      </div>
+    </div>
+
+    <ul class="planos__grid" data-stagger>
+      {
+        PLANS.map((plan) => (
+          <li
+            class:list={['plan', { 'plan--featured': plan.featured }]}
+            data-stagger-item
+            data-plan={JSON.stringify({ name: plan.name, prices: plan.prices })}
+          >
+            <div class="plan__inner">
+              {plan.featured && <span class="plan__badge">Mais completo</span>}
+              <p class="plan__people">{plan.people}</p>
+              <h3 class="plan__name">
+                <span class="plan__name-thin">Plano</span> {plan.name}
+              </h3>
+              <p class="plan__text">{plan.text}</p>
+
+              <p class="plan__price">
+                <span class="plan__currency">R$</span>
+                <span class="plan__value" data-plan-value>
+                  {formatBRL(plan.prices.mensal)}
+                </span>
+                <span class="plan__suffix" data-plan-suffix>
+                  /mês
+                </span>
+              </p>
+              <p class="plan__equiv" data-plan-equiv>
+                &nbsp;
+              </p>
+
+              <ul class="plan__benefits">
+                {plan.benefits.map((b) => (
+                  <li>
+                    <Icon name="check" /> {b}
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href={whatsappUrl(planMessage(plan.name, 'Mensal'))}
+                class:list={['btn', 'plan__cta', { 'btn--white': plan.featured }]}
+                target="_blank"
+                rel="noopener"
+                data-plan-cta
+                data-magnetic
+              >
+                <span class="btn__inner">
+                  Contratar <Icon name="arrow-up-right" />
+                </span>
+                <span class="sr-only"> o Plano {plan.name} pelo WhatsApp</span>
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="planos__note">
+      Valores conforme a tabela publicada pela academia. Confirme condições e formas de pagamento pelo WhatsApp.
+    </p>
+  </div>
+</section>
+
+<style>
+  .planos {
+    overflow: hidden;
+  }
+
+  .planos__ghost {
+    top: 2%;
+    left: -4vw;
+  }
+
+  .planos__head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  /* ---------- Seletor de período ---------- */
+
+  /* Cada botão tem a largura do próprio texto; a pílula vermelha é posicionada e
+     dimensionada pelo JS (src/scripts/ui/plans.ts) para cobrir exatamente o botão ativo. */
+  .period {
+    position: relative;
+    display: inline-flex;
+    max-width: 100%;
+    padding: 5px;
+    border-radius: 999px;
+    background: var(--pf-card);
+    border: 1px solid var(--pf-line);
+  }
+
+  .period__btn {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    min-height: 44px;
+    padding: 0.5rem clamp(0.7rem, 0.4rem + 1vw, 1.15rem);
+    border-radius: 999px;
+    font-size: clamp(0.6875rem, 0.62rem + 0.3vw, 0.8125rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--pf-muted);
+    transition: color 0.3s;
+  }
+
+  .period__btn[aria-pressed='true'] {
+    color: var(--pf-white);
+  }
+
+  /* Celulares estreitos: os 4 rótulos cabem numa linha só */
+  @media (max-width: 420px) {
+    .period__btn {
+      padding-inline: 0.45rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.02em;
+    }
+  }
+
+  .period__pill {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 0;
+    width: 0;
+    border-radius: 999px;
+    background: var(--pf-red);
+    transition:
+      transform 0.5s var(--ease-out),
+      width 0.5s var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .period__pill {
+      transition: none;
+    }
+  }
+
+  /* Sem JS: destaca o botão ativo sem a pílula animada */
+  :global(html:not(.motion-ready)) .period__pill {
+    display: none;
+  }
+  :global(html:not(.motion-ready)) .period__btn[aria-pressed='true'] {
+    background: var(--pf-red);
+  }
+
+  /* ---------- Cards ---------- */
+
+  .planos__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .plan {
+    position: relative;
+    border-radius: var(--radius);
+    padding: 1px;
+    background: var(--pf-line);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .plan__inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.5rem, 3vw, 2rem);
+    border-radius: calc(var(--radius) - 1px);
+    background: linear-gradient(170deg, var(--pf-card), var(--pf-surface));
+  }
+
+  /* Destaque: borda em gradiente girando (só transform) */
+  .plan--featured {
+    padding: 2px;
+    background: var(--pf-red-deep);
+  }
+
+  .plan--featured::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    top: 50%;
+    width: 200%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    background: conic-gradient(from 0deg, transparent 0 55%, var(--pf-red-hot) 70%, #ffffff 76%, var(--pf-red-hot) 82%, transparent 95%);
+    animation: plan-spin 4.5s linear infinite;
+    animation-play-state: paused;
+    will-change: transform;
+  }
+
+  /* Só gira enquanto o card está visível (classe aplicada em src/scripts/ui/plans.ts) */
+  .plan--featured.is-inview::before {
+    animation-play-state: running;
+  }
+
+  @keyframes plan-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plan--featured::before {
+      animation: none;
+    }
+  }
+
+  .plan--featured .plan__inner {
+    border-radius: calc(var(--radius) - 2px);
+    background:
+      radial-gradient(90% 70% at 0% 0%, var(--pf-red-hot), transparent 65%),
+      linear-gradient(170deg, var(--pf-red), var(--pf-red-deep));
+  }
+
+  .plan__badge {
+    align-self: flex-start;
+    margin-bottom: 1rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: var(--pf-black);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-stretch: 125%;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .plan__people {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pf-muted);
+  }
+
+  .plan--featured .plan__people,
+  .plan--featured .plan__text,
+  .plan--featured .plan__equiv {
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  .plan__name {
+    margin-top: 0.5rem;
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 1.875rem);
+    font-weight: 900;
+    font-stretch: 112%;
+    overflow-wrap: anywhere;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+
+  .plan__name-thin {
+    display: block;
+    font-weight: 300;
+    font-size: 0.6em;
+  }
+
+  .plan__text {
+    margin-top: 0.75rem;
+    font-size: var(--fs-sm);
+    color: var(--pf-muted);
+  }
+
+  .plan__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-top: 1.75rem;
+    font-stretch: 112%;
+    white-space: nowrap;
+  }
+
+  .plan__currency {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+
+  .plan__value {
+    font-size: clamp(2rem, 1.6rem + 1.2vw, 2.5rem);
+    font-weight: 900;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .plan__suffix {
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .plan__equiv {
+    min-height: 1.5em;
+    margin-top: 0.35rem;
+    font-size: var(--fs-xs);
+    color: var(--pf-muted);
+  }
+
+  .plan__benefits {
+    display: grid;
+    gap: 0.6rem;
+    margin-block: 1.5rem 2rem;
+    font-size: var(--fs-sm);
+  }
+
+  .plan__benefits li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .plan__benefits :global(.icon) {
+    width: 18px;
+    flex: none;
+    color: var(--pf-red-hot);
+  }
+
+  .plan--featured .plan__benefits :global(.icon) {
+    color: var(--pf-white);
+  }
+
+  .plan__cta {
+    margin-top: auto;
+    width: 100%;
+  }
+
+  .planos__note {
+    margin-top: 1.5rem;
+    font-size: var(--fs-xs);
+    color: var(--pf-muted);
+  }
+
+  @media (min-width: 768px) {
+    .planos__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .planos__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

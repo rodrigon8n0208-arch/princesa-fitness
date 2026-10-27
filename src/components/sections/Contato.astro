@@ -1,0 +1,159 @@
+---
+import Highlight from '../ui/Highlight.astro';
+import Icon from '../ui/Icon.astro';
+import OpenStatus from '../ui/OpenStatus.astro';
+import { SITE, MAPS, HOURS_SUMMARY, whatsappUrl } from '../../data/site';
+---
+
+<section class="section contato" id="contato" aria-labelledby="contato-title">
+  <div class="container contato__grid">
+    <div class="contato__info">
+      <p class="eyebrow" data-reveal>Localização</p>
+      <h2 class="display section-title" id="contato-title" data-reveal-title>
+        <span class="thin">No coração</span><br />
+        <span class="bold">de <Highlight>Princesa</Highlight></span>
+      </h2>
+
+      <ul class="contato__list" data-stagger>
+        <li class="contato__item" data-stagger-item>
+          <Icon name="pin" />
+          <div>
+            <p class="contato__label">Endereço</p>
+            <address class="contato__value">
+              {SITE.address.street}<br />
+              {SITE.address.district}, {SITE.address.city} - {SITE.address.state}
+            </address>
+          </div>
+        </li>
+        <li class="contato__item" data-stagger-item>
+          <Icon name="clock" />
+          <div>
+            <p class="contato__label">Horário</p>
+            <ul class="contato__value">
+              {
+                HOURS_SUMMARY.map((h) => (
+                  <li>
+                    {h.label}: <strong>{h.value}</strong>
+                  </li>
+                ))
+              }
+            </ul>
+            <OpenStatus class="contato__status" />
+          </div>
+        </li>
+        <li class="contato__item" data-stagger-item>
+          <Icon name="instagram" />
+          <div>
+            <p class="contato__label">Instagram</p>
+            <a href={SITE.instagram.url} class="contato__value contato__link" target="_blank" rel="noopener">
+              {SITE.instagram.handle}
+            </a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="contato__ctas">
+        <a href={MAPS.directions} class="btn" target="_blank" rel="noopener" data-magnetic>
+          <span class="btn__inner"><Icon name="route" /> Como chegar</span>
+        </a>
+        <a href={whatsappUrl()} class="btn btn--ghost" target="_blank" rel="noopener" data-magnetic>
+          <span class="btn__inner"><Icon name="whatsapp" /> WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="contato__map" data-clip-reveal>
+      <iframe
+        src={MAPS.embed}
+        title="Mapa: Princesa Fitness na Rua Belarmino Maia, 121, Centro, Princesa Isabel - PB"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contato__grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .contato__list {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 2.25rem;
+  }
+
+  .contato__item {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .contato__item > :global(.icon) {
+    flex: none;
+    width: 26px;
+    margin-top: 0.15rem;
+    color: var(--pf-red-hot);
+  }
+
+  .contato__label {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pf-muted);
+  }
+
+  .contato__value {
+    margin-top: 0.3rem;
+    font-style: normal;
+    font-size: var(--fs-md);
+  }
+
+  .contato__link {
+    display: inline-block;
+    text-decoration: underline;
+    text-decoration-color: var(--pf-red);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  .contato__item :global(.contato__status) {
+    margin-top: 0.75rem;
+  }
+
+  .contato__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 2.5rem;
+  }
+
+  .contato__map {
+    position: relative;
+    min-height: 360px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--pf-card);
+    border: 1px solid var(--pf-line);
+  }
+
+  .contato__map iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .contato__grid {
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: clamp(3rem, 6vw, 6rem);
+    }
+    .contato__map {
+      min-height: 520px;
+    }
+  }
+</style>

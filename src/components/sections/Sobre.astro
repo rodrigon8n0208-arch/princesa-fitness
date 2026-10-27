@@ -1,0 +1,174 @@
+---
+import { Image } from 'astro:assets';
+import Highlight from '../ui/Highlight.astro';
+import { DIFERENCIAIS } from '../../data/site';
+import { slot, fitWidths } from '../../data/images';
+
+const sobre = slot('sobre', 'estrutura-cardio');
+const sobreAlt = sobre.isCustom
+  ? 'Ambiente da Princesa Fitness com equipamentos de musculação e iluminação de LED'
+  : 'Área de cardio da Princesa Fitness com esteiras, simuladores de escada e fitas de LED no teto preto';
+---
+
+<section class="section sobre" id="sobre" aria-labelledby="sobre-title">
+  <div class="container sobre__grid">
+    <div class="sobre__media">
+      <div class="sobre__frame brand-photo grain" data-clip-reveal>
+        <Image
+          src={sobre.image!}
+          alt={sobreAlt}
+          widths={fitWidths([480, 760, 1080, 1400], sobre.image!)}
+          sizes="(min-width: 1024px) 45vw, 92vw"
+          class="sobre__img"
+          data-parallax-img
+        />
+      </div>
+      {!sobre.isCustom && <p class="sobre__caption">Teto com fitas de LED e área de cardio completa.</p>}
+    </div>
+
+    <div class="sobre__text">
+      <p class="eyebrow" data-reveal>Sobre a academia</p>
+      <h2 class="display section-title" data-reveal-title>
+        <span class="thin">Muito além</span><br />
+        <span class="bold">da <Highlight>musculação</Highlight></span>
+      </h2>
+
+      <div class="sobre__body">
+        <p data-reveal-lines>
+          Na Princesa Fitness, cuidar do corpo vai muito além da estética. É promover saúde, qualidade de vida e mais
+          autonomia em todas as fases da vida.
+        </p>
+        <p data-reveal-lines>
+          Musculação não é só para quem quer ficar grande. É para quem quer ter mais disposição, fortalecer o corpo,
+          prevenir limitações e envelhecer com saúde. Porque treinar é sobre como você quer viver amanhã.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <ul class="sobre__cards" data-stagger>
+      {
+        DIFERENCIAIS.map((d, i) => (
+          <li class="sobre__card" data-stagger-item>
+            <span class="sobre__card-num">0{i + 1}</span>
+            <h3 class="sobre__card-title">{d.title}</h3>
+            <p class="sobre__card-text">{d.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .sobre__grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .sobre__frame {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+  }
+
+  .sobre__img {
+    width: 100%;
+    height: 115%;
+    object-fit: cover;
+  }
+
+  .sobre__caption {
+    margin-top: 0.9rem;
+    font-size: var(--fs-xs);
+    color: var(--pf-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .sobre__body {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 2rem;
+    color: var(--pf-muted);
+    font-size: var(--fs-md);
+    max-width: 52ch;
+  }
+
+  .sobre__cards {
+    display: grid;
+    gap: 1rem;
+    margin-top: clamp(3.5rem, 7vw, 6rem);
+  }
+
+  .sobre__card {
+    position: relative;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border-radius: var(--radius);
+    background: linear-gradient(160deg, var(--pf-card), var(--pf-surface));
+    border: 1px solid var(--pf-line);
+    overflow: hidden;
+    transition:
+      border-color 0.3s,
+      transform 0.5s var(--ease-out);
+  }
+
+  .sobre__card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--pf-red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .sobre__card:hover {
+      border-color: rgba(196, 30, 36, 0.5);
+      transform: translateY(-4px);
+    }
+    .sobre__card:hover::before {
+      transform: scaleX(1);
+    }
+  }
+
+  .sobre__card-num {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    font-stretch: 125%;
+    color: var(--pf-red-hot);
+    letter-spacing: 0.12em;
+  }
+
+  .sobre__card-title {
+    margin-top: 1.25rem;
+    font-size: var(--fs-lg);
+    font-weight: 800;
+    font-stretch: 125%;
+    text-transform: uppercase;
+    line-height: 1.15;
+  }
+
+  .sobre__card-text {
+    margin-top: 0.75rem;
+    color: var(--pf-muted);
+    font-size: var(--fs-sm);
+  }
+
+  @media (min-width: 768px) {
+    .sobre__cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .sobre__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(3rem, 6vw, 6rem);
+    }
+  }
+</style>

@@ -1,0 +1,73 @@
+---
+import Icon from '../ui/Icon.astro';
+import Logo from '../ui/Logo.astro';
+import { whatsappUrl } from '../../data/site';
+---
+
+<section class="cta" aria-labelledby="cta-title">
+  <Logo variant="symbol" class="cta__mark" title="" />
+  <div class="container cta__inner">
+    <h2 class="display cta__title" id="cta-title" data-reveal-title>
+      <span class="thin">Sua segunda casa</span><br />
+      <span class="bold">está te esperando.</span>
+    </h2>
+    <p class="cta__text" data-reveal>
+      Chame a gente no WhatsApp, tire suas dúvidas e venha fazer parte do nosso time.
+    </p>
+    <a href={whatsappUrl()} class="btn btn--dark cta__btn" target="_blank" rel="noopener" data-magnetic data-magnetic-strength="0.5">
+      <span class="btn__inner"><Icon name="whatsapp" /> Chamar no WhatsApp</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .cta {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding-block: clamp(6rem, 12vw, 11rem);
+    background:
+      radial-gradient(70% 90% at 100% 0%, var(--pf-red-hot), transparent 60%),
+      linear-gradient(160deg, var(--pf-red), var(--pf-red-deep));
+    text-align: center;
+  }
+
+  .cta :global(.cta__mark) {
+    position: absolute;
+    z-index: -1;
+    right: -8%;
+    bottom: -18%;
+    width: clamp(320px, 60vw, 820px);
+    opacity: 0.12;
+  }
+
+  .cta :global(.cta__mark path) {
+    fill: #000;
+  }
+
+  .cta__inner {
+    display: grid;
+    justify-items: center;
+    gap: 1.75rem;
+  }
+
+  .cta__title {
+    font-size: clamp(2.2rem, 1rem + 5.4vw, 6rem);
+  }
+
+  .cta__text {
+    max-width: 44ch;
+    font-size: var(--fs-lg);
+  }
+
+  .cta__btn {
+    min-height: clamp(64px, 8vw, 84px);
+    padding-inline: clamp(1.75rem, 4vw, 3rem);
+    font-size: clamp(0.875rem, 0.7rem + 0.6vw, 1.125rem);
+  }
+
+  .cta__btn :global(.icon) {
+    width: 1.5em;
+    height: 1.5em;
+  }
+</style>
